@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loja Velho-Chico</title>
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+  <h1>Loja Velho-Chico</h1>
+  <a href="index.html" class="btn-inicio">← Voltar ao Início</a>
+
+  <div class="container" id="produtos"></div>
+
+  <div class="carrinho">
+    <h2>Carrinho</h2>
+    <ul id="lista-carrinho">
+      <li>Seu carrinho está vazio.</li>
+    </ul>
+    <div class="total" id="total"></div>
+    <button class="whatsapp" id="btn-finalizar">Finalizar Pedido</button>
+  </div>
+
+  <div id="popup">
+    <div>
+      <h3>Finalizar Pedido</h3>
+      <label>Endereço:</label>
+      <input type="text" id="endereco" />
+      <label>Telefone:</label>
+      <input type="text" id="telefone" />
+      <label>Forma de pagamento:</label>
+      <select id="pagamento">
+        <option value="Pix">Pix</option>
+        <option value="Cartão">Cartão</option>
+        <option value="Dinheiro">Dinheiro</option>
+      </select>
+      <button onclick="enviarPedido()">Enviar Pedido via WhatsApp</button>
+      <button onclick="document.getElementById('popup').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+
+  <script>
+    
+    
+    // PEÇAS E ESTOQUE. DEFINA AQUI A QUANTIDADE DE PEÇAS////////////////////////////////////////////////////////////////
+    const produtos = [
+      {
+        nome: "Regata Machão",
+        preco: 110,
+        img: "regatamachão.jpg",
+        estoque: 0,              //// ESTOQUE DE PEÇAS ALTERE NO CASO DE ESGOTAMENTO!
+        cores: [
+          {nome: "Azul", corHex: "blue", img: "regatamachão.jpg"},
+          {nome: "Amarela", corHex: "yellow", img: "machaoamarela.jpg"},
+          {nome: "Branca", corHex: "white", img: "machaobranca.jpg"}
+        ],
+        tamanhos: ["M", "G"]
+      },
+      {
+        nome: "Regata Tricot",
+        preco: 120,     //// PREÇO DAS PEÇAS
+        img: "regatatrict.jpg",
+        estoque: 5, //// ESTOQUE DE PEÇAS ALTERE NO CASO DE ESGOTAMENTO!
+        cores: [
+          {nome: "Azul escuro", corHex: "#003366", img: "regatatrict.jpg"},
+          {nome: "Preto", corHex: "black", img: "trict-preta.jpg"},
+          {nome: "Azul Claro", corHex: "#66ccff", img: "trict-azulclaro.jpg"}
+        ],
+        tamanhos: ["M", "G"]
+      },
+      {
+        nome: "Short",
+        preco: 99,
+        img: "bermudas.jpeg",
+        estoque: 5, //// ESTOQUE DE PEÇAS ALTERE NO CASO DE ESGOTAMENTO!
+        cores: [
+          {nome: "Branco", corHex: "white", img: "short-branco.jpeg"},
+          {nome: "Azul Escuro", corHex: "#003366", img: "short-azulescuro.jpg"},
+          {nome: "Preta", corHex: "black", img: "short-preto.jpg"}
+        ],
+        tamanhos: ["M", "G"]
+      },
+      {
+        nome: "Acessórios",
+        preco: 60,
+        img: "acessorios.jpg",
+        estoque: 3, //// ESTOQUE DE PEÇAS ALTERE NO CASO DE ESGOTAMENTO!
+        cores: [
+          {nome: "Natural", corHex: "#c2b280", img: "acessorios.jpg"}
+        ],
+        tamanhos: []
+      },
+      {
+        nome: "Camisa Básica",
+        preco: 110,
+        img: "camisabasica.jpg",
+        estoque: 0, //// ESTOQUE DE PEÇAS ALTERE NO CASO DE ESGOTAMENTO!
+        cores: [
+          {nome: "Branco", corHex: "white", img: "camisabasica-branca.jpg"},
+          {nome: "Preto", corHex: "black", img: "camisabasica-preta.jpg"}
+        ],
+        tamanhos: ["M", "G"]
+      }
+    ];
+//////////////////////////////////////////////////////////// FIM 
+    let carrinho = [];
+
+    const container = document.getElementById("produtos");
+    const listaCarrinho = document.getElementById("lista-carrinho");
+    const totalEl = document.getElementById("total");
+    const popup = document.getElementById("popup");
+
+    // Renderiza produtos na tela
+    function renderizarProdutos() {
+      container.innerHTML = "";
+      produtos.forEach((p, i) => {
+        const div = document.createElement("div");
+        div.className = "produto";
+
+        // Imagem inicial - cor default (primeira cor)
+        let imgSrc = p.cores && p.cores.length > 0 ? p.cores[0].img : p.img;
+
+        div.innerHTML = `
+          <img src="${imgSrc}" alt="${p.nome}" />
+          <div class="produto-info">
+            <h3>${p.nome}</h3>
+            <p>R$ ${p.preco},00</p>
+            ${p.cores && p.cores.length > 0 ? `
+              <div class="opcoes cores"></div>
+            ` : ''}
+            ${p.tamanhos && p.tamanhos.length > 0 ? `
+              <div class="opcoes tamanhos"></div>
+            ` : ''}
+            ${p.estoque > 0 ? `
+              <button>Adicionar ao carrinho</button>
+            ` : `<p class="indisponivel">Indisponível no momento</p>`}
+          </div>
+        `;
+
+        container.appendChild(div);
+
+        // Referência para elementos
+        const img = div.querySelector("img");
+        const coresDiv = div.querySelector(".cores");
+        const tamanhosDiv = div.querySelector(".tamanhos");
+        const btnAdd = div.querySelector("button");
+
+        // Gerar opções cores
+        let corSelecionada = p.cores && p.cores.length > 0 ? 0 : null;
+        if (coresDiv) {
+          p.cores.forEach((cor, ci) => {
+            const bola = document.createElement("div");
+            bola.className = "cor";
+            bola.style.backgroundColor = cor.corHex;
+            if (ci === 0) bola.classList.add("selecionado");
+            bola.title = cor.nome;
+            bola.addEventListener("click", () => {
+              // Atualiza imagem do produto
+              img.src = cor.img;
+              // Atualiza seleção de cor
+              const bolas = coresDiv.querySelectorAll(".cor");
+              bolas.forEach(b => b.classList.remove("selecionado"));
+              bola.classList.add("selecionado");
+              corSelecionada = ci;
+            });
+            coresDiv.appendChild(bola);
+          });
+        }
+
+        // Gerar opções tamanhos
+        let tamanhoSelecionado = p.tamanhos && p.tamanhos.length > 0 ? 0 : null;
+        if (tamanhosDiv) {
+          p.tamanhos.forEach((t, ti) => {
+            const btn = document.createElement("div");
+            btn.className = "tamanho";
+            btn.textContent = t;
+            if (ti === 0) btn.classList.add("selecionado");
+            btn.addEventListener("click", () => {
+              const btns = tamanhosDiv.querySelectorAll(".tamanho");
+              btns.forEach(b => b.classList.remove("selecionado"));
+              btn.classList.add("selecionado");
+              tamanhoSelecionado = ti;
+            });
+            tamanhosDiv.appendChild(btn);
+          });
+        }
+
+        // Botão adicionar ao carrinho
+        if (btnAdd) {
+          btnAdd.addEventListener("click", () => {
+            if (p.estoque <= 0) {
+              alert("Produto indisponível no momento.");
+              return;
+            }
+            const corEscolhida = corSelecionada !== null ? p.cores[corSelecionada].nome : null;
+            const tamanhoEscolhido = tamanhoSelecionado !== null ? p.tamanhos[tamanhoSelecionado] : null;
+
+            adicionarAoCarrinho(p, corEscolhida, tamanhoEscolhido);
+          });
+        }
+      });
+    }
+
+    // Adiciona item ao carrinho
+    function adicionarAoCarrinho(produto, cor, tamanho) {
+      // Verifica se já tem no carrinho o mesmo produto, cor e tamanho
+      let itemExistente = carrinho.find(item => 
+        item.nome === produto.nome &&
+        item.cor === cor &&
+        item.tamanho === tamanho
+      );
+
+      if (itemExistente) {
+        // Incrementa quantidade se estoque permitir
+        if (itemExistente.quantidade < produto.estoque) {
+          itemExistente.quantidade++;
+        } else {
+          alert("Quantidade máxima em estoque atingida.");
+          return;
+        }
+      } else {
+        carrinho.push({
+          nome: produto.nome,
+          preco: produto.preco,
+          cor,
+          tamanho,
+          quantidade: 1
+        });
+      }
+
+      atualizarCarrinho();
+    }
+
+    // Atualiza visual do carrinho
+    function atualizarCarrinho() {
+      if (carrinho.length === 0) {
+        listaCarrinho.innerHTML = "<li>Seu carrinho está vazio.</li>";
+        totalEl.textContent = "";
+        return;
+      }
+
+      listaCarrinho.innerHTML = "";
+
+      let total = 0;
+      carrinho.forEach((item, idx) => {
+        const li = document.createElement("li");
+
+        const descr = `${item.nome} ${item.cor ? '('+item.cor+')' : ''} ${item.tamanho ? '- Tamanho '+item.tamanho : ''} x${item.quantidade}`;
+        const precoTotal = item.preco * item.quantidade;
+        total += precoTotal;
+
+        li.textContent = `${descr} — R$ ${precoTotal},00 `;
+
+        // Botão remover item
+        const btnRemover = document.createElement("button");
+        btnRemover.textContent = "X";
+        btnRemover.title = "Remover item";
+        btnRemover.addEventListener("click", () => {
+          removerDoCarrinho(idx);
+        });
+
+        li.appendChild(btnRemover);
+        listaCarrinho.appendChild(li);
+      });
+
+      totalEl.textContent = `Total: R$ ${total},00`;
+    }
+
+    // Remove item do carrinho pelo índice
+    function removerDoCarrinho(indice) {
+      carrinho.splice(indice, 1);
+      atualizarCarrinho();
+    }
+
+    // Botão finalizar pedido
+    document.getElementById("btn-finalizar").addEventListener("click", () => {
+      if (carrinho.length === 0) {
+        alert("Seu carrinho está vazio!");
+        return;
+      }
+      popup.style.display = "flex";
+    });
+
+    // Envia pedido via WhatsApp
+    function enviarPedido() {
+      const endereco = document.getElementById("endereco").value.trim();
+      const telefone = document.getElementById("telefone").value.trim();
+      const pagamento = document.getElementById("pagamento").value;
+
+      if (!endereco || !telefone) {
+        alert("Por favor, preencha endereço e telefone.");
+        return;
+      }
+
+      let msg = "Olá, gostaria de fazer o pedido:\n\n";
+
+      carrinho.forEach(item => {
+        msg += `- ${item.nome}`;
+        if (item.cor) msg += ` (${item.cor})`;
+        if (item.tamanho) msg += ` - Tamanho ${item.tamanho}`;
+        msg += ` x${item.quantidade}\n`;
+      });
+
+      msg += `\nForma de pagamento: ${pagamento}`;
+      msg += `\nEndereço: ${endereco}`;
+      msg += `\nTelefone: ${telefone}`;
+
+      const textoEncode = encodeURIComponent(msg);
+
+      // Telefone da loja, por exemplo (DDD + número, só números)
+      const telefoneLoja = "5582999999999";
+
+      const urlWhatsapp = `https://wa.me/${telefoneLoja}?text=${textoEncode}`;
+      window.open(urlWhatsapp, "_blank");
+
+      // Fecha popup e limpa campos
+      popup.style.display = "none";
+      document.getElementById("endereco").value = "";
+      document.getElementById("telefone").value = "";
+      document.getElementById("pagamento").value = "Pix";
+
+      // Limpa carrinho após pedido
+      carrinho = [];
+      atualizarCarrinho();
+    }
+
+    renderizarProdutos();
+    atualizarCarrinho();
+  </script>
+</body>
+</html>

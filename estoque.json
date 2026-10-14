@@ -1,0 +1,55 @@
+[
+  {
+    "nome": "Regata Machão",
+    "preco": 110,
+    "variacoes": [
+      { "cor": "Azul", "tamanho": "M", "quantidade": 2, "img": "regatamachao.jpg" },
+      { "cor": "Azul", "tamanho": "G", "quantidade": 2, "img": "regatamachao.jpg" },
+      { "cor": "Amarela", "tamanho": "M", "quantidade": 2, "img": "machaoamarela.jpg" },
+      { "cor": "Amarela", "tamanho": "G", "quantidade": 2, "img": "machaoamarela.jpg" },
+      { "cor": "Branca", "tamanho": "M", "quantidade": 2, "img": "machaobranca.jpg" },
+      { "cor": "Branca", "tamanho": "G", "quantidade": 2, "img": "machaobranca.jpg" }
+    ]
+  },
+  {
+    "nome": "Regata Tricot",
+    "preco": 120,
+    "variacoes": [
+      { "cor": "Azul escuro", "tamanho": "M", "quantidade": 2, "img": "regatatrict.jpg" },
+      { "cor": "Azul escuro", "tamanho": "G", "quantidade": 2, "img": "regatatrict.jpg" },
+      { "cor": "Preto", "tamanho": "M", "quantidade": 2, "img": "trict-preta.jpg" },
+      { "cor": "Preto", "tamanho": "G", "quantidade": 2, "img": "trict-preta.jpg" },
+      { "cor": "Azul Claro", "tamanho": "M", "quantidade": 2, "img": "trict-azulclaro.jpg" },
+      { "cor": "Azul Claro", "tamanho": "G", "quantidade": 2, "img": "trict-azulclaro.jpg" }
+    ]
+  },
+  {
+    "nome": "Short",
+    "preco": 99,
+    "variacoes": [
+      { "cor": "Branco", "tamanho": "M", "quantidade": 2, "img": "short-branco.jpeg" },
+      { "cor": "Branco", "tamanho": "G", "quantidade": 2, "img": "short-branco.jpeg" },
+      { "cor": "Azul Escuro", "tamanho": "M", "quantidade": 2, "img": "short-azulescuro.jpg" },
+      { "cor": "Azul Escuro", "tamanho": "G", "quantidade": 2, "img": "short-azulescuro.jpg" },
+      { "cor": "Preta", "tamanho": "M", "quantidade": 2, "img": "short-preto.jpg" },
+      { "cor": "Preta", "tamanho": "G", "quantidade": 2, "img": "short-preto.jpg" }
+    ]
+  },
+  {
+    "nome": "Bonés",
+    "preco": 60,
+    "variacoes": [
+      { "cor": "Natural", "tamanho": null, "quantidade": 3, "img": "acessorios.jpg" }
+    ]
+  },
+  {
+    "nome": "Camisa Básica",
+    "preco": 110,
+    "variacoes": [
+      { "cor": "Branco", "tamanho": "M", "quantidade": 2, "img": "camisabasica-branca.jpg" },
+      { "cor": "Branco", "tamanho": "G", "quantidade": 2, "img": "camisabasica-branca.jpg" },
+      { "cor": "Preto", "tamanho": "M", "quantidade": 2, "img": "camisabasica-preta.jpg" },
+      { "cor": "Preto", "tamanho": "G", "quantidade": 2, "img": "camisabasica-preta.jpg" }
+    ]
+  }
+]
